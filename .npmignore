@@ -1,7 +1,0 @@
-src
-doc
-node_modules
-build
-assets
-.DS_Store
-.prettierrc
