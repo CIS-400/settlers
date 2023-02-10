@@ -69,7 +69,7 @@ export class Game implements Loggable {
   /** The dev card deck. */
   readonly deck: DevCardBundle
   /** The board. */
-  private readonly board: Board
+  public readonly board: Board
   /** The current turn number takes on a value of: [0, NUM_PLAYERS] */
   private turn: number
   /** Convenience var to get the player obj of the current turn. */

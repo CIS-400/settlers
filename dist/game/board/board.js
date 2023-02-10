@@ -54,13 +54,13 @@ class Board {
                 }
                 tiles += `{ id: ${i} | ${(0, resource_1.resStr)(this.tiles[i].resource)} | ${this.tiles[i].getNumber()} } `;
             }
-            let o = 'tiles:' + tiles + '\nnodes:';
+            let o = 'Tiles:' + tiles + '\nNodes:';
             for (let i = 0; i < this.nodes.length; i++) {
                 if (!this.nodes[i].isEmpty()) {
-                    o += `\n  { id: ${i} | player: ${this.nodes[i].getPlayer()} | ${this.nodes[i].hasCity() ? 'city' : 'settlement'} }`;
+                    o += `\n  { id: ${i} | Player: ${this.nodes[i].getPlayer() + 1} | ${this.nodes[i].hasCity() ? 'City' : 'Settlement'} }`;
                 }
             }
-            o += `\nrobber: ${this.robber}`;
+            o += `\nRobber: ${this.robber}`;
             return o;
         };
         this.roadnetwork = this.generateRoadNetwork();

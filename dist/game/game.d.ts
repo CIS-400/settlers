@@ -8,6 +8,7 @@ import ResourceBundle from './resource/resource_bundle';
 import Action from './action';
 import { TurnState } from './turn_fsm';
 import DevCardBundle from './dev_card/dev_card_bundle';
+import Board from './board/board';
 import TradeOffer from './trade_offer';
 import Loggable from './loggable';
 /**
@@ -31,7 +32,7 @@ export declare class Game implements Loggable {
     /** The dev card deck. */
     readonly deck: DevCardBundle;
     /** The board. */
-    private readonly board;
+    readonly board: Board;
     /** The current turn number takes on a value of: [0, NUM_PLAYERS] */
     private turn;
     /** Convenience var to get the player obj of the current turn. */

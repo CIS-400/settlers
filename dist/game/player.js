@@ -9,7 +9,7 @@ const dev_card_bundle_1 = __importDefault(require("./dev_card/dev_card_bundle"))
 const resource_bundle_1 = __importDefault(require("./resource/resource_bundle"));
 class Player {
     constructor() {
-        this.toLog = () => `resources: [ ${this.resources.toLog()} ], devCards: [ ${this.devCards.toLog()} ], vps: ${this.victoryPoints} cities: ${this.cities} settlements: ${this.settlements} roads: ${this.roads}`;
+        this.toLog = () => `    Resources: [ ${this.resources.toLog()} ]\n    DevCards: [ ${this.devCards.toLog()} ]\n    VPs: ${this.victoryPoints}; Cities: ${this.cities}; Settlements: ${this.settlements}; Roads: ${this.roads}`;
         this.resources = new resource_bundle_1.default();
         this.rates = new resource_bundle_1.default(constants_1.BANK_RATE);
         this.devCards = new dev_card_bundle_1.default();

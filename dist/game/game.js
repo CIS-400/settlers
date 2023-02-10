@@ -77,33 +77,29 @@ class Game {
             let o = '';
             o += this.board.toLog() + '\n';
             o +=
-                'lastRoll: ' +
+                'Last Roll: ' +
                     this.lastRoll +
-                    ' | phase: ' +
+                    ' | Phase: ' +
                     this.phase +
-                    ' | turnState: ' +
+                    ' | State: ' +
                     this.turnState +
-                    ' | turn: ' +
-                    this.turn +
+                    ' | Player\'s Turn: ' +
+                    (this.turn + 1) +
                     '\n';
             o += 'Players: \n';
             for (let i = 0; i < constants_1.NUM_PLAYERS; i++)
-                o += this.players[i].toLog() + '\n';
+                o += `  Player ${i + 1}:\n` + this.players[i].toLog() + '\n';
             o += 'Trade Offers: \n';
             for (let i = 0; i < this.tradeOffers.length; i++)
                 o += this.tradeOffers[i].toLog() + '\n';
             o += 'Bank: ' + this.bank.toLog() + '\n';
             o += 'Deck: ' + this.deck.toLog() + '\n';
-            o += 'Largest Army: ' + JSON.stringify(this.largestArmy) + '\n';
-            o += 'Longest Road: ' + JSON.stringify(this.longestRoad) + '\n';
-            o +=
-                'Free Roads: ' +
-                    this.freeRoads +
-                    ' | hasRolled: ' +
-                    this.hasRolled +
-                    ' | winner: ' +
-                    this.winner +
-                    '\n';
+            o += 'Largest Army: ';
+            o += ((this.largestArmy['owner'] === -1) ? 'None' : ('Player ' + (this.largestArmy['owner'] + 1) + ', Size ' + this.largestArmy['size'])) + '\n';
+            o += 'Longest Road: ';
+            o += ((this.longestRoad['owner'] === -1) ? 'None' : ('Player ' + (this.longestRoad['owner'] + 1) + ', Size ' + this.longestRoad['len'])) + '\n';
+            o += 'Free Roads: ' + this.freeRoads + ' | Winner: ';
+            o += (this.winner === -1) ? 'None' : ('Player ' + (this.winner + 1)) + '\n';
             if (this.mustDiscard.includes(true))
                 o += 'mustDiscard: ' + this.mustDiscard.toString() + '\n';
             return o;
