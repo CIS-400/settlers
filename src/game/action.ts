@@ -3,10 +3,10 @@
  * @module
  */
 
-import DevCard from './dev_card/dev_card'
-import Resource from './resource/resource'
-import ResourceBundle from './resource/resource_bundle'
-import { TradeStatus } from './trade_offer'
+import DevCard from "./dev_card/dev_card";
+import Resource from "./resource/resource";
+import ResourceBundle from "./resource/resource_bundle";
+import { TradeStatus } from "./trade_offer";
 
 /**
  * All possible types of actions.
@@ -44,115 +44,115 @@ export enum ActionType {
 export const actionTypeStr = (a: ActionType) => {
   switch (a) {
     case ActionType.Roll:
-      return 'Roll'
+      return "Roll";
     case ActionType.PlayRobber:
-      return 'Play Robber'
+      return "Play Robber";
     case ActionType.MoveRobber:
-      return 'Move Robber'
+      return "Move Robber";
     case ActionType.Rob:
-      return 'Rob'
+      return "Rob";
     case ActionType.PlayMonopoly:
-      return 'Play Monopoly'
+      return "Play Monopoly";
     case ActionType.SelectMonopolyResource:
-      return 'Select Monopoly Resource'
+      return "Select Monopoly Resource";
     case ActionType.PlayYearOfPlenty:
-      return 'Play YOP'
+      return "Play YOP";
     case ActionType.SelectYearOfPlentyResources:
-      return 'Select YOP Resources'
+      return "Select YOP Resources";
     case ActionType.PlayRoadBuilder:
-      return 'Play Road Builder'
+      return "Play Road Builder";
     case ActionType.BuildSettlement:
-      return 'Build Settlement'
+      return "Build Settlement";
     case ActionType.BuildCity:
-      return 'Build City'
+      return "Build City";
     case ActionType.BuildRoad:
-      return 'Build Road'
+      return "Build Road";
     case ActionType.Discard:
-      return 'Discard'
+      return "Discard";
     case ActionType.MakeTradeOffer:
-      return 'Make Trade Offer'
+      return "Make Trade Offer";
     case ActionType.DecideOnTradeOffer:
-      return 'Decide on Trade Offer'
+      return "Decide on Trade Offer";
     case ActionType.DrawDevCard:
-      return 'Draw Dev Card'
+      return "Draw Dev Card";
     case ActionType.Exchange:
-      return 'Exchange'
+      return "Exchange";
     default:
-      return 'End Turn'
+      return "End Turn";
   }
-}
+};
 
 export interface ActionPayload {}
 
 export interface ExchangePayload extends ActionPayload {
-  offer: Resource
-  request: Resource
+  offer: Resource;
+  request: Resource;
 }
 
 export interface MakeTradeOfferPayload extends ActionPayload {
   /** What is the actual offer lol */
-  offer: ResourceBundle
-  request: ResourceBundle
+  offer: ResourceBundle;
+  request: ResourceBundle;
 }
 
 export interface TradeOfferDecisionPayload extends ActionPayload {
   /** The decision. */
-  status: TradeStatus
+  status: TradeStatus;
   /** The id of the trade. */
-  id: number
+  id: number;
   /** The player we are agreeing to do the trade with. Only needed by host. */
-  withPlayer?: number
+  withPlayer?: number;
 }
 
 export interface DiscardPayload extends ActionPayload {
   /** The bundle we'll be discarding */
-  bundle: ResourceBundle
+  bundle: ResourceBundle;
 }
 
 export interface DrawDevCardPayload extends ActionPayload {
   /** The card we draw */
-  card: DevCard
+  card: DevCard;
 }
 
 export interface RollPayload extends ActionPayload {
-  /** the value of the dice sum. */
-  value: number
+  /** the value of the dice . */
+  dice: [number, number];
 }
 
 export interface MoveRobberPayload extends ActionPayload {
   /** The tile number we want to move the robber to. */
-  to: number
+  to: number;
 }
 
 export interface RobPayload extends ActionPayload {
   /** The number of the player we want to rob. */
-  victim: number
+  victim: number;
 }
 
 export interface SelectMonopolyResourcePayload extends ActionPayload {
   /** The resource we want to monopoly. */
-  resource: Resource
+  resource: Resource;
 }
 
 export interface SelectYearOfPlentyResourcesPayload extends ActionPayload {
   /** The resources we want to get. */
-  resources: [Resource, Resource]
+  resources: [Resource, Resource];
 }
 
 export interface BuildSettlementPayload extends ActionPayload {
   /** The node number we want to build a settlement on. */
-  node: number
+  node: number;
 }
 
 export interface BuildCityPayload extends ActionPayload {
   /** The node number we want to build a city on. */
-  node: number
+  node: number;
 }
 
 export interface BuildRoadPayload extends ActionPayload {
   /** The edge number we want to build a settlement on. */
-  node0: number
-  node1: number
+  node0: number;
+  node1: number;
 }
 
 /**
@@ -169,23 +169,27 @@ export interface BuildRoadPayload extends ActionPayload {
  */
 export class Action {
   /** The type of the action. */
-  readonly type: ActionType
+  readonly type: ActionType;
   /** Any additional data needed to convey the desired action. */
-  readonly payload: ActionPayload
+  readonly payload: ActionPayload;
   /** The player number who is requesting the action. */
-  readonly player: number
-  constructor(type: ActionType, player: number = 0, payload: ActionPayload = {}) {
-    this.type = type
-    this.player = player
-    this.payload = payload
+  readonly player: number;
+  constructor(
+    type: ActionType,
+    player: number = 0,
+    payload: ActionPayload = {}
+  ) {
+    this.type = type;
+    this.player = player;
+    this.payload = payload;
   }
 
-  public serialized = (): string => JSON.stringify(this)
+  public serialized = (): string => JSON.stringify(this);
 
   public static deserialize = (serializedObj: string): Action => {
-    const { type, payload, player } = JSON.parse(serializedObj)
-    return new Action(type, player, payload)
-  }
+    const { type, payload, player } = JSON.parse(serializedObj);
+    return new Action(type, player, payload);
+  };
 }
 
-export default Action
+export default Action;
