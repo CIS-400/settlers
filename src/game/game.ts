@@ -73,7 +73,7 @@ export class Game implements Loggable {
   /** The current turn number takes on a value of: [0, NUM_PLAYERS] */
   private turn: number;
   /** Convenience var to get the player obj of the current turn. */
-  private currPlayer: Player;
+  currPlayer: Player;
   /** The last roll */
   private lastRoll: [number, number];
   /** List of player objects. Indexable by player number. */
@@ -541,8 +541,9 @@ export class Game implements Loggable {
     const { type, payload, player } = action;
     if (type === ActionType.Roll) {
       const { dice } = payload as RollPayload;
+      if (dice === undefined) return true;
       const value = dice[0] + dice[1];
-      return value === undefined || (value > 0 && value < 13);
+      return value > 0 && value < 13;
     } else if (type === ActionType.PlayRobber) {
       return (
         !this.hasPlayedDevCard && this.currPlayer.devCards.has(DevCard.Knight)
