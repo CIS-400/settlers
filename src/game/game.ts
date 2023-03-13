@@ -201,6 +201,7 @@ export class Game implements Loggable {
       // Finally distribute the production bundles to their respective players.
       for (let i = 0; i < production.length; i++) {
         this.players[i].resources.add(production[i]);
+        this.bank.subtract(production[i]);
       }
 
       this.turnState = TurnState.Postroll;

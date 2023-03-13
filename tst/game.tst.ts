@@ -3,6 +3,19 @@ import Action, { ActionType, RollPayload } from "../src/game/action";
 import Game, { GamePhase } from "../src/game/game";
 import { TurnState } from "../src/game/turn_fsm";
 
+describe("handle roll action nondeterministic", () => {
+  const game: any = new Game();
+
+  // configure game
+  game.turnState = TurnState.Preroll;
+
+  it("handleAction(<roll action>, 1) returns null, requester incorrect", () => {
+    const e = (<Game>game).handleAction(new Action(ActionType.Roll, 0, {}));
+    assert.notStrictEqual(e, null);
+    assert.notStrictEqual((<RollPayload>e!.payload).dice, undefined);
+  });
+});
+
 describe("handle roll action", () => {
   const game: any = new Game();
 
