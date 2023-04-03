@@ -3,23 +3,23 @@
  * @module
  */
 
-import { Action, ActionType } from './action'
+import { Action, ActionType } from "./action";
 
 export enum TurnState {
-  SetupSettlement = 'Setup Settlement',
-  SetupRoad = 'Setup Road',
+  SetupSettlement = "Setup Settlement",
+  SetupRoad = "Setup Road",
 
-  Preroll = 'Pre-roll',
-  Postroll = 'Post-roll',
+  Preroll = "Pre-roll",
+  Postroll = "Post-roll",
 
-  MovingRobber = 'Moving Robber',
-  Robbing = 'Robbing',
+  MovingRobber = "Moving Robber",
+  Robbing = "Robbing",
 
-  SelectingMonopolyResource = 'Selecting Monopoly Resource',
+  SelectingMonopolyResource = "Selecting Monopoly Resource",
 
-  SelectingYearOfPlentyResources = 'Selecting Year of Plenty Resource',
+  SelectingYearOfPlentyResources = "Selecting Year of Plenty Resource",
 
-  Discarding = 'Discarding',
+  Discarding = "Discarding",
 }
 
 /**
@@ -33,9 +33,9 @@ export const isValidTransition = (state: TurnState, action: Action) => {
   const validActions: ActionType[] = (() => {
     switch (state) {
       case TurnState.SetupSettlement:
-        return [ActionType.BuildSettlement]
+        return [ActionType.BuildSettlement];
       case TurnState.SetupRoad:
-        return [ActionType.BuildRoad]
+        return [ActionType.BuildRoad];
       case TurnState.Preroll:
         return [
           ActionType.PlayMonopoly,
@@ -44,17 +44,17 @@ export const isValidTransition = (state: TurnState, action: Action) => {
           ActionType.PlayRoadBuilder,
           ActionType.Roll,
           ActionType.BuildRoad, // iff you have free roads.
-        ]
+        ];
       case TurnState.MovingRobber:
-        return [ActionType.MoveRobber]
+        return [ActionType.MoveRobber];
       case TurnState.Robbing:
-        return [ActionType.Rob]
+        return [ActionType.Rob];
       case TurnState.SelectingMonopolyResource:
-        return [ActionType.SelectMonopolyResource]
+        return [ActionType.SelectMonopolyResource];
       case TurnState.SelectingYearOfPlentyResources:
-        return [ActionType.SelectYearOfPlentyResources]
+        return [ActionType.SelectYearOfPlentyResources];
       case TurnState.Discarding:
-        return [ActionType.Discard]
+        return [ActionType.Discard];
       default:
         // Post roll.
         return [
@@ -73,10 +73,10 @@ export const isValidTransition = (state: TurnState, action: Action) => {
           ActionType.BuildCity,
           ActionType.BuildRoad,
           ActionType.BuildSettlement,
-        ]
+        ];
     }
-  })()
-  return validActions.includes(action.type)
-}
+  })();
+  return validActions.includes(action.type);
+};
 
-export default isValidTransition
+export default isValidTransition;

@@ -59,15 +59,16 @@ export class TradeOffer implements Loggable {
     `{\nid: ${this.id}, offerer: ${this.offerer}\nstatus: ${Object.entries(
       this.status
     )
-      .map(([player, status]) => {
-        `${player}: ${
-          status === TradeStatus.Accept
-            ? "Accepted"
-            : status === TradeStatus.Decline
-            ? "Declined"
-            : "Pending"
-        }`;
-      })
+      .map(
+        ([player, status]) =>
+          `${player}: ${
+            status === TradeStatus.Accept
+              ? "Accepted"
+              : status === TradeStatus.Decline
+              ? "Declined"
+              : "Pending"
+          }`
+      )
       .join(
         ", "
       )}\noffer: [ ${this.offer.toLog()} ] request: [ ${this.request.toLog()} ]\n}`;

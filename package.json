@@ -1,8 +1,12 @@
 {
   "name": "settlers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Core logic for a settlers game instance.",
-  "private": true,
+  "private": false,
+  "files": [
+    "dist/**/*",
+    "package.json"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/aydangoon/settlers.git"
