@@ -9,12 +9,17 @@ import seedrandom from "seedrandom";
 /**
  * Returns a index from a weighted array.
  * @param weights An array of weights
+ * @param useGlobal Should we use global random for consistent randomness
+ * across clients?
  * @return The index to remove or -1 if no such index if weights are 0 or
  * array is empty.
  */
-export const weightedRandom = (weights: number[]) => {
+export const weightedRandom = (
+  weights: number[],
+  globalRandom: boolean = true
+) => {
   const sum = weights.reduce((acc, curr) => acc + curr);
-  let value = seedrandom()() * sum;
+  let value = (globalRandom ? Math.random() : seedrandom()()) * sum;
   for (let i = 0; i < weights.length; i++) {
     value -= weights[i];
     if (value <= 0) return i;
@@ -26,13 +31,18 @@ export const weightedRandom = (weights: number[]) => {
  * Roll a die.
  * @returns A uniform int on [1, 6]
  */
-export const rollDie = () => uniformRandom(1, 6);
+export const rollDie = () => uniformRandom(1, 6, false);
 
 /**
  * @returns A uniform int on [lo, hi]
  */
-export const uniformRandom = (lo: number, hi: number) =>
-  Math.floor(seedrandom()() * (hi - lo + 1)) + lo;
+export const uniformRandom = (
+  lo: number,
+  hi: number,
+  globalRandom: boolean = true
+) =>
+  Math.floor((globalRandom ? Math.random() : seedrandom()()) * (hi - lo + 1)) +
+  lo;
 
 /**
  * A recursive helper function to find the max trail.
