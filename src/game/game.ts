@@ -407,6 +407,7 @@ export class Game implements Loggable {
   private do_discard(action: Action) {
     const { bundle } = action.payload as DiscardPayload;
     this.players[action.player].resources.subtract(bundle);
+    this.bank.add(bundle);
     this.mustDiscard[action.player] = false;
 
     // If someone is over the limit, we move to discarding state before moving robber.
@@ -635,7 +636,7 @@ export class Game implements Loggable {
       );
     } else if (type === ActionType.MakeTradeOffer) {
       const { offer } = payload as MakeTradeOfferPayload;
-      return this.players[player].resources.has(offer);
+      return this.players[player].resources.has(offer as ResourceBundle);
     } else if (type === ActionType.DecideOnTradeOffer) {
       const { status, id, withPlayer } = payload as TradeOfferDecisionPayload;
       const to = this.tradeOffers.find((offer) => offer.id === id);

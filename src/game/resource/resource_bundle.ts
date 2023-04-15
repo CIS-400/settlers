@@ -44,7 +44,7 @@ export class ResourceBundle implements Loggable {
    */
   public has(bundle: ResourceBundle): boolean {
     for (let i = 0; i < NUM_RESOURCE_TYPES; i++) {
-      if (this.bundle[i] < bundle.get(i)) return false;
+      if (this.bundle[i] < bundle.bundle[i]) return false;
     }
     return true;
   }
@@ -81,7 +81,7 @@ export class ResourceBundle implements Loggable {
     if (args.length === 1) {
       const [bundle] = args as [ResourceBundle];
       for (let i = 0; i < NUM_RESOURCE_TYPES; i++) {
-        this.bundle[i] += bundle.get(i);
+        this.bundle[i] += bundle.bundle[i];
       }
     } else {
       const [resource, amnt] = args as [Resource, number];
@@ -99,7 +99,7 @@ export class ResourceBundle implements Loggable {
     if (args.length === 1) {
       const [bundle] = args as [ResourceBundle];
       for (let i = 0; i < NUM_RESOURCE_TYPES; i++) {
-        this.bundle[i] -= bundle.get(i);
+        this.bundle[i] -= bundle.bundle[i];
       }
     } else {
       const [resource, amnt] = args as [Resource, number];

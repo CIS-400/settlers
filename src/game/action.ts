@@ -187,7 +187,31 @@ export class Action {
   public serialized = (): string => JSON.stringify(this);
 
   public static deserialize = (serializedObj: string): Action => {
-    const { type, payload, player } = JSON.parse(serializedObj);
+    const raw_object = JSON.parse(serializedObj);
+    const type: ActionType = raw_object.type;
+    const player: number = raw_object.player;
+    const raw_payload = raw_object.payload;
+    let payload: ActionPayload;
+    switch (type) {
+      case ActionType.Exchange:
+        payload = {
+          offer: raw_payload.offer as Resource,
+          request: raw_payload.request as Resource,
+        } as ExchangePayload;
+        break;
+      case ActionType.MakeTradeOffer:
+        payload = {
+          offer: new ResourceBundle([...raw_payload.offer.bundle]),
+          request: new ResourceBundle([...raw_payload.request.bundle]),
+        } as MakeTradeOfferPayload;
+        console.log(
+          "here",
+          (<MakeTradeOfferPayload>payload).offer,
+          (<MakeTradeOfferPayload>payload).offer.get(Resource.Lumber)
+        );
+      default:
+        payload = { ...raw_payload };
+    }
     return new Action(type, player, payload);
   };
 }
