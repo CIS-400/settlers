@@ -632,7 +632,8 @@ export class Game implements Loggable {
       return (
         this.mustDiscard[player] &&
         this.players[player].resources.has(bundle) &&
-        bundle.size() === Math.floor(this.players[player].resources.size() / 2)
+        bundle.bundle.reduce((prev, curr) => curr + prev, 0) ===
+          Math.floor(this.players[player].resources.size() / 2)
       );
     } else if (type === ActionType.MakeTradeOffer) {
       const { offer } = payload as MakeTradeOfferPayload;
