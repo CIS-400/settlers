@@ -242,8 +242,6 @@ export class Game implements Loggable {
             this.transferLongestRoad(i, myLength);
         }
       }
-
-      this.checkWinner();
     } else {
       // Setup case. just build the settlement where requested.
       this.board.nodes[node].buildSettlement(this.turn);
@@ -270,6 +268,7 @@ export class Game implements Loggable {
     }
     this.currPlayer.victoryPoints++;
     this.currPlayer.settlements--;
+    this.checkWinner();
   }
 
   private do_buildRoad(action: Action) {
@@ -586,6 +585,7 @@ export class Game implements Loggable {
         node > -1 &&
         node < NUM_NODES &&
         this.board.nodes[node].isEmpty() &&
+        this.players[player].settlements > 0 &&
         !this.board
           .adjacentTo(node)
           .some((other) => !this.board.nodes[other].isEmpty()) &&
@@ -600,6 +600,7 @@ export class Game implements Loggable {
       return (
         node > -1 &&
         node < NUM_NODES &&
+        this.players[player].cities > 0 &&
         this.board.nodes[node].getPlayer() === this.turn &&
         !this.board.nodes[node].hasCity() &&
         this.currPlayer.resources.has(ResourceBundle.cityCost)
@@ -612,6 +613,7 @@ export class Game implements Loggable {
       const adj0 = this.board.adjacentTo(node0);
       const adj1 = this.board.adjacentTo(node1);
       return (
+        this.players[player].roads > 0 &&
         adj0.includes(node1) && // nodes adjacent and
         this.board.getRoad(node0, node1) === -1 && // no road there yet and
         ((this.phase !== GamePhase.Playing &&
