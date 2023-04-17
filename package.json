@@ -1,6 +1,6 @@
 {
   "name": "settlers",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Core logic for a settlers game instance.",
   "private": false,
   "files": [
