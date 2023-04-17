@@ -5,14 +5,14 @@ import {
   NUM_NODES,
   NUM_RESOURCE_TYPES,
   NUM_TILES,
-} from '../constants'
-import Node from './node'
-import Tile from './tile'
-import { connectedComponents, maxTrail, weightedRandom } from '../utils'
-import Graph from './graph'
-import Port from './port'
-import Resource, { resStr } from '../resource/resource'
-import Loggable from '../loggable'
+} from "../constants";
+import Node from "./node";
+import Tile from "./tile";
+import { connectedComponents, maxTrail, weightedRandom } from "../utils";
+import Graph from "./graph";
+import Port from "./port";
+import Resource, { resStr } from "../resource/resource";
+import Loggable from "../loggable";
 
 /**
  * A game board. The board manages the internal logic
@@ -22,150 +22,152 @@ import Loggable from '../loggable'
  */
 export class Board implements Loggable {
   /** List of node objects, indexable by node number. */
-  readonly nodes: Node[]
+  readonly nodes: Node[];
   /** Graph of nodes. Edge weight -1 indicates connection edge weight > -1 indicates road
    * for the player number of that weight.
    */
-  readonly roadnetwork: Graph<number>
+  readonly roadnetwork: Graph<number>;
   /** List of tiles objects indexable by tile number. */
-  readonly tiles: Tile[]
+  readonly tiles: Tile[];
   /** The tile number the robber is on. */
-  public robber: number = -1
+  public robber: number = -1;
 
   constructor() {
-    this.roadnetwork = this.generateRoadNetwork()
-    this.nodes = this.generateNodes()
-    this.tiles = this.generateTiles() // Generate tiles & set robber.
+    this.roadnetwork = this.generateRoadNetwork();
+    this.nodes = this.generateNodes();
+    this.tiles = this.generateTiles(); // Generate tiles & set robber.
   }
 
   private generateRoadNetwork() {
-    const g = new Graph<number>([...Array(NUM_NODES)].map((_, i) => i))
+    const g = new Graph<number>([...Array(NUM_NODES)].map((_, i) => i));
 
     // Establish our connections.
-    const rowSize = [7, 9, 11, 11, 9, 7] // nodes per row
-    const downOffset = [8, 10, 11, 10, 8]
+    const rowSize = [7, 9, 11, 11, 9, 7]; // nodes per row
+    const downOffset = [8, 10, 11, 10, 8];
 
-    let col = 0
-    let row = 0
+    let col = 0;
+    let row = 0;
     for (let i = 0; i < NUM_NODES; i++) {
       // establish the connection between node and its right node
       if (col + 1 !== rowSize[row]) {
-        g.addEdge(i, i + 1)
+        g.addEdge(i, i + 1);
       }
       // establish the conneciton between node and its downward node
       if (row < 3 && col % 2 == 0) {
-        g.addEdge(i, i + downOffset[row])
+        g.addEdge(i, i + downOffset[row]);
       } else if ((row == 3 || row == 4) && col % 2 == 1) {
-        g.addEdge(i, i + downOffset[row])
+        g.addEdge(i, i + downOffset[row]);
       }
 
-      col++
+      col++;
       if (col == rowSize[row]) {
-        col = 0
-        row++
+        col = 0;
+        row++;
       }
     }
-    return g
+    return g;
   }
 
   private generateNodes() {
-    const nodes: Node[] = [...Array(NUM_NODES)].map(() => new Node())
+    const nodes: Node[] = [...Array(NUM_NODES)].map(() => new Node());
 
     // Assign ports randomly.
-    const ports: number[] = [...Array(NUM_RESOURCE_TYPES + 1)].map(() => 1)
-    ports[NUM_RESOURCE_TYPES] = 4 // Set 3:1 ports.
+    const ports: number[] = [...Array(NUM_RESOURCE_TYPES + 1)].map(() => 1);
+    ports[NUM_RESOURCE_TYPES] = 4; // Set 3:1 ports.
 
     for (let i = 0; i < HAVE_PORTS.length; i++) {
-      const [node0, node1]: [number, number] = HAVE_PORTS[i]
-      const index = weightedRandom(ports)
-      ports[index]--
-      let port: Port
-      if (index === NUM_RESOURCE_TYPES) {
-        port = new Port([...Array(NUM_RESOURCE_TYPES).keys()], 3)
+      const [node0, node1, type]: [number, number, Resource | 5] =
+        HAVE_PORTS[i];
+      let port: Port;
+      if (type === NUM_RESOURCE_TYPES) {
+        port = new Port([...Array(NUM_RESOURCE_TYPES).keys()], 3);
+        ports[type]--; // Decrement 3:1 ports.
       } else {
-        port = new Port([index as Resource], 2)
+        port = new Port([type as Resource], 2);
+        ports[type]--; // Decrement 2:1 ports.
       }
-      nodes[node0].setPort(port)
-      nodes[node1].setPort(port)
+      nodes[node0].setPort(port);
+      nodes[node1].setPort(port);
     }
 
-    return nodes
+    return nodes;
   }
 
   private generateTiles() {
-    const tiles: Tile[] = new Array(NUM_TILES)
+    const tiles: Tile[] = new Array(NUM_TILES);
 
-    const resources: number[] = [...NUM_EACH_RESOURCE_TILE, 1] // The 1 is for None (desert)
+    const resources: number[] = [...NUM_EACH_RESOURCE_TILE, 1]; // The 1 is for None (desert)
 
     // Make tile objects. lmao wish i was good at math
-    const rowSize = [3, 4, 5, 4, 3]
-    const rowFirstNid = [0, 7, 16, 28, 39]
-    const rowNidOffset = [8, 10, 11, 10, 8]
+    const rowSize = [3, 4, 5, 4, 3];
+    const rowFirstNid = [0, 7, 16, 28, 39];
+    const rowNidOffset = [8, 10, 11, 10, 8];
 
-    let row = 0
-    let col = 0
+    let row = 0;
+    let col = 0;
     for (let i = 0; i < NUM_TILES; i++) {
       // Select a random resource for this tile.
-      const index = weightedRandom(resources)
-      resources[index]--
+      const index = weightedRandom(resources);
+      resources[index]--;
 
       // Calculate the node ids of of its nodes.
-      const nid = 2 * col + rowFirstNid[row]
-      const offset = nid + rowNidOffset[row]
-      const nids = [nid, nid + 1, nid + 2, offset, offset + 1, offset + 2]
+      const nid = 2 * col + rowFirstNid[row];
+      const offset = nid + rowNidOffset[row];
+      const nids = [nid, nid + 1, nid + 2, offset, offset + 1, offset + 2];
 
-      tiles[i] = new Tile(index as Resource, nids)
+      tiles[i] = new Tile(index as Resource, nids);
 
-      col++
+      col++;
       // We should update to the next row.
       if (col == rowSize[row]) {
-        col = 0
-        row++
+        col = 0;
+        row++;
       }
     }
 
     // Distribute tokens.
 
     // Number number token `i` is `tokens[i - 2]`
-    const temp = [1, 2, 2, 2, 2]
-    const tokens = [...temp, 0, ...temp.reverse()]
+    const temp = [1, 2, 2, 2, 2];
+    const tokens = [...temp, 0, ...temp.reverse()];
     // Distribute 6s and 8s first to ensure seperation.
 
     const choosable: number[] = [...Array(NUM_TILES).keys()].map((i) =>
       tiles[i].resource !== Resource.None ? 1 : 0
-    )
+    );
     for (let i = 0; i < 4; i++) {
-      const index = weightedRandom(choosable)
-      const number = tokens[4] > 0 ? 6 : 8
-      tiles[index].setNumber(number)
-      tokens[number - 2]--
+      const index = weightedRandom(choosable);
+      const number = tokens[4] > 0 ? 6 : 8;
+      tiles[index].setNumber(number);
+      tokens[number - 2]--;
 
       for (let j = 0; j < choosable.length; j++) {
         if (choosable[j] === 1 && tiles[index].isAdjacentTo(tiles[j])) {
-          choosable[j] = 0
+          choosable[j] = 0;
         }
       }
     }
 
     // Distribute the rest of the tokens.
     for (let i = 0; i < NUM_TILES; i++) {
-      if (tiles[i].getNumber() !== -1) continue
+      if (tiles[i].getNumber() !== -1) continue;
 
       // If None (desert), index is 5 since number is 7. Otherwise
       // do a weighted random pick.
-      const index = tiles[i].resource !== Resource.None ? weightedRandom(tokens) : 5
+      const index =
+        tiles[i].resource !== Resource.None ? weightedRandom(tokens) : 5;
 
-      tiles[i].setNumber(index + 2)
+      tiles[i].setNumber(index + 2);
 
       // If tile is desert, also just set the robber.
       if (tiles[i].resource === Resource.None) {
-        this.robber = i
+        this.robber = i;
       } else {
-        tokens[index]--
+        tokens[index]--;
       }
     }
 
-    return tiles
+    return tiles;
   }
 
   /**
@@ -174,13 +176,15 @@ export class Board implements Loggable {
    * @returns The length of the longest trail.
    */
   private longestRoadOn(g: Graph<string>): number {
-    const oddDeg = []
-    const nodes = g.nodes()
+    const oddDeg = [];
+    const nodes = g.nodes();
     for (let i = 0; i < nodes.length; i++) {
-      if (g.degree(nodes[i]) % 2 === 1) oddDeg.push(nodes[i])
+      if (g.degree(nodes[i]) % 2 === 1) oddDeg.push(nodes[i]);
     }
     // If at most 2 odd-degree, eulerian path exists, just return edgeCount.
-    return oddDeg.length <= 2 ? g.edgeCount() : Math.max(...oddDeg.map((i) => maxTrail(g, i)))
+    return oddDeg.length <= 2
+      ? g.edgeCount()
+      : Math.max(...oddDeg.map((i) => maxTrail(g, i)));
   }
 
   /**
@@ -191,35 +195,44 @@ export class Board implements Loggable {
   public getLongestRoad(player: number): number {
     // Step 0: Preprocessing. Convert player's roads into a graph.
 
-    const edges: [string, string][] = [] // edges to add to our graph.
+    const edges: [string, string][] = []; // edges to add to our graph.
 
     for (let i = 0; i < NUM_NODES; i++) {
-      const node: Node = this.nodes[i]
+      const node: Node = this.nodes[i];
       // Check right.
       if (this.roadnetwork.getWeight(i, i + 1) === player) {
         if (!node.isEmpty() && node.getPlayer() !== player) {
-          edges.push([`${i}_l`, `${i + 1}`])
-        } else if (!this.nodes[i + 1].isEmpty() && this.nodes[i + 1].getPlayer() !== player) {
-          edges.push([`${i}`, `${i + 1}_r`])
+          edges.push([`${i}_l`, `${i + 1}`]);
+        } else if (
+          !this.nodes[i + 1].isEmpty() &&
+          this.nodes[i + 1].getPlayer() !== player
+        ) {
+          edges.push([`${i}`, `${i + 1}_r`]);
         } else {
-          edges.push([`${i}`, `${i + 1}`])
+          edges.push([`${i}`, `${i + 1}`]);
         }
       }
       // Check down
-      const below = this.roadnetwork.children(i).filter((id) => id > i + 1)[0]
-      if (below !== undefined && this.roadnetwork.getWeight(i, below) === player) {
+      const below = this.roadnetwork.children(i).filter((id) => id > i + 1)[0];
+      if (
+        below !== undefined &&
+        this.roadnetwork.getWeight(i, below) === player
+      ) {
         if (!node.isEmpty() && node.getPlayer() !== player) {
-          edges.push([`${i}_u`, `${below}`])
-        } else if (!this.nodes[below].isEmpty() && this.nodes[below].getPlayer() !== player) {
-          edges.push([`${i}`, `${below}_d`])
+          edges.push([`${i}_u`, `${below}`]);
+        } else if (
+          !this.nodes[below].isEmpty() &&
+          this.nodes[below].getPlayer() !== player
+        ) {
+          edges.push([`${i}`, `${below}_d`]);
         } else {
-          edges.push([`${i}`, `${below}`])
+          edges.push([`${i}`, `${below}`]);
         }
       }
     }
 
-    const ccs: Graph<string>[] = connectedComponents(new Graph<string>(edges))
-    return Math.max(0, ...ccs.map((cc) => this.longestRoadOn(cc)))
+    const ccs: Graph<string>[] = connectedComponents(new Graph<string>(edges));
+    return Math.max(0, ...ccs.map((cc) => this.longestRoadOn(cc)));
   }
 
   /**
@@ -236,7 +249,7 @@ export class Board implements Loggable {
               .map((nid) => this.nodes[nid].getPlayer())
           ),
         ]
-      : []
+      : [];
   }
 
   /**
@@ -247,7 +260,7 @@ export class Board implements Loggable {
    * @param player The player number.
    */
   public buildRoad(nid0: number, nid1: number, player: number) {
-    this.roadnetwork.setWeight(nid0, nid1, player)
+    this.roadnetwork.setWeight(nid0, nid1, player);
   }
 
   /**
@@ -258,7 +271,7 @@ export class Board implements Loggable {
    * of the road otherwise.
    */
   public getRoad(nid0: number, nid1: number) {
-    return this.roadnetwork.getWeight(nid0, nid1)
+    return this.roadnetwork.getWeight(nid0, nid1);
   }
 
   /**
@@ -266,29 +279,31 @@ export class Board implements Loggable {
    * @param nid The node id we want to get the adjacent nodes for.
    * @returns List of adjacent node ids.
    */
-  public adjacentTo = (nid: number) => this.roadnetwork.children(nid)
+  public adjacentTo = (nid: number) => this.roadnetwork.children(nid);
 
   toLog = () => {
-    let tiles = '\n  ';
+    let tiles = "\n  ";
     for (let i = 0; i < this.tiles.length; i++) {
       if (i === 3 || i === 7 || i === 12 || i === 16 || i === 19) {
-        tiles += '\n  '
+        tiles += "\n  ";
       }
-      tiles += `{ id: ${i} | ${resStr(this.tiles[i].resource)} | ${this.tiles[i].getNumber()} } `
+      tiles += `{ id: ${i} | ${resStr(this.tiles[i].resource)} | ${this.tiles[
+        i
+      ].getNumber()} } `;
     }
 
-    let o = 'Tiles:' + tiles + '\nNodes:'
+    let o = "Tiles:" + tiles + "\nNodes:";
 
     for (let i = 0; i < this.nodes.length; i++) {
       if (!this.nodes[i].isEmpty()) {
         o += `\n  { id: ${i} | Player: ${this.nodes[i].getPlayer() + 1} | ${
-          this.nodes[i].hasCity() ? 'City' : 'Settlement'
-        } }`
+          this.nodes[i].hasCity() ? "City" : "Settlement"
+        } }`;
       }
     }
-    o += `\nRobber: ${this.robber}`
-    return o
-  }
+    o += `\nRobber: ${this.robber}`;
+    return o;
+  };
 }
 
-export default Board
+export default Board;
